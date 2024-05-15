@@ -226,13 +226,15 @@ const Home = ({ navigation }) => {
     );
   };
 
-  const dangkyHoatDong = async (hoatdongID, hoatdongSV) => {
+  const dangkyHoatDong = (hoatdongID, hoatdongSV) => {
     if (checkEnter(hoatdongSV)) {
       setIDHDDangKy(hoatdongID)
       setVisibleDialogAlert(true)
     } else {
-      let token = await AsyncStorage.getItem("token-access");
-      const res = await authApi(token).post(endpoints['hoatdong_dangkyHD'](hoatdongID));
+      const signupAct = async () => {
+        let token = await AsyncStorage.getItem("token-access");
+        const res = await authApi(token).post(endpoints['hoatdong_dangkyHD'](hoatdongID));
+      }
     }
   }
 

@@ -1,20 +1,26 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Avatar,
+  Button,
   Card,
   MD2Colors,
   Text,
 } from "react-native-paper";
 // import userContext from "../../Context/userContext/userContext";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Api, { endpoints } from "../../ApisService/Api";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // const StackNavigate = createNativeStackNavigator();
 
 export default NguoiDungSVDetail = ({ route }) => {
   const [usersv, setUsersv] = useState(null);
+  const [diem, setDiem] = useState(null)
+  const [idHK, setIDHK] = useState(1);
+  const [hocki, setHocKi] = useState(null);
 
   const { nguoidungID } = route.params;
 
@@ -24,12 +30,28 @@ export default NguoiDungSVDetail = ({ route }) => {
       setUsersv(res.data)
       // console.warn(res.data)
     };
+
+    const loadDiem = async () => {
+      // let token = await AsyncStorage.getItem("token-access");
+      const res = await Api.get(endpoints['usersvs_detail_thanhtichs'](JSON.stringify(nguoidungID)))
+      setDiem(res.data)
+      // console.warn(diem)
+    };
+
+    const loadHocKi = async () => {
+      const res = await Api.get(endpoints['hockis'])
+      setHocKi(res.data.results)
+      // console.warn(hocki)
+    }
+
+    loadDiem();
+    loadHocKi();
     load();
   }, []);
 
   return (
     <>
-      <View>
+      <ScrollView>
         {usersv === null ? (
           <ActivityIndicator animating={true} color={MD2Colors.red800} />
         ) : (
@@ -83,9 +105,51 @@ export default NguoiDungSVDetail = ({ route }) => {
                 </View>
               </Card.Content>
             </Card>
+            {diem === null ? <ActivityIndicator animating={true} color={MD2Colors.red800} /> : <>
+              <View style={{ alignSelf: "center", marginTop: 20, justifyContent: "center", alignContent: "center", alignItems: "center" }}>
+                {hocki == null ? <ActivityIndicator animating={true} color={MD2Colors.red800} /> : <>
+                  <View style={{ flexDirection: "row", justifyContent: "center" }}>{hocki.map((hk) => (
+                    <Button style={{ marginLeft: 5 }} mode="outlined" onPress={() => {
+                      setIDHK(hk.id)
+                    }}>
+                      {hk.name}
+                    </Button>
+                  ))}</View>
+                </>}
+
+                {diem.map((mark) => (
+                  <>
+                    {mark.hoc_ki.id === idHK ? <><Text variant="displayMedium">{mark.hoc_ki.name}</Text>
+                      <AnimatedCircularProgress style={{ marginTop: 20 }}
+                        size={120}
+                        width={15}
+                        fill={mark.diem}
+                        tintColor={mark.diem >= 80 ? "#00e0ff" : mark.diem >= 50 && mark.diem < 80 ? "#DAA520" : "#B22222"}
+                        onAnimationComplete={() => console.log('onAnimationComplete')}
+                        lineCap="round"
+                        arcSweepAngle={180}
+                        rotation={-90}
+                        duration={1000}
+                        tintTransparency={true}
+                        backgroundColor="#3d5875">
+                        {(fill) => (
+                          <Text>
+                            {mark.diem} / 100
+                          </Text>
+                        )}
+                      </AnimatedCircularProgress>
+
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={{ alignSelf: "flex-start", textAlign: "left", alignContent: "flex-start" }} variant="titleLarge">Xếp loại: </Text>
+                        <Text style={{ color: mark.diem >= 80 ? "#008000" : mark.diem >= 50 && mark.diem < 80 ? "#DAA520" : "#B22222" }} variant="titleLarge">{mark.thanh_tich}</Text>
+                      </View></> : <></>}
+                  </>
+                ))}
+              </View>
+            </>}
           </>
         )}
-      </View>
+      </ScrollView>
     </>
   );
 };

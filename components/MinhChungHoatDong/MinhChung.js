@@ -16,7 +16,7 @@ const MinhChung = () => {
     const [visible, setVisible] = useState(false);
     const [minhchung, setMinhChung] = useState({
         "minh_chung": "",
-        "hoat_dong": ""
+        "hoat_dong_id": ""
     })
 
     const [quyche, setQuyChe] = useState(null);
@@ -137,7 +137,7 @@ const MinhChung = () => {
                                 {/* <Chip onPress={() => { }}>-</Chip> */}
                                 <Chip onPress={() => { }}>{hd.ngay_het}</Chip>
                                 <Button icon="table-check" mode="elevated" dark={false} buttonColor="#FFD700" onPress={() => {
-                                    change("hoat_dong", hd.id);
+                                    change("hoat_dong_id", hd.id);
                                     setIDHD(hd.id);
                                     showModal();
                                 }}>Báo Thiếu</Button>

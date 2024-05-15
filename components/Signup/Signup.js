@@ -326,7 +326,7 @@ export default Signup = ({ navigation }) => {
               inputMode="tel"
               keyboardType="phone-pad"
               autoComplete="tel"
-              textContentType="emailAddress"
+              textContentType="telephoneNumber"
               onChangeText={(t) => change("phone", t)}
             />
           )}
